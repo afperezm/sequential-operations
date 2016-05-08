@@ -45,46 +45,60 @@ simbolos_sr = simbolos[idx>0,:,:]
 
 # In[6]:
 
-def generateSequence(Dg, Et, Sm, Op, total):
+def generateSequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLength):
     """
-    Generates a random sequence of 'total' triplets of operands and operators.
+    Generates a random sequence of 'sequenceLength' triplets of operands and operators.
     """
-    # Initialize
-    sequence = np.zeros((total, 3, 28, 28, 1))
-    result = np.zeros((total, 1))
-    operands = np.zeros((total, 3))
-    k = 0
-    for k in range(total):
-        # Generate random indices of operands and operators
-        i = randrange(0, Op.shape[0])
-        j1 = randrange(0, 55000)
-        j2 = randrange(0, 55000)
+    
+    operationLength = digitOneLength + 1 + digitTwoLength
+    
+    # Initialize return variables
+    sequence = np.zeros((sequenceLength, operationLength, Sm.shape[1], Sm.shape[2], 1))
+    result = np.zeros((sequenceLength, 1))
+    operands = np.zeros((sequenceLength, 3))
+    
+    for k in range(sequenceLength):
         
-        # Reshape image of first operand
-        digit1 = np.reshape(Dg[j1,:],[28,28])
-        # Reshape image of operator
-        operator = Sm[i,:,:]
-        # Reshape image of second operand
-        digit2 = np.reshape(Dg[j2,:],[28,28])
-        sequence[k,0,:,:,0] = digit1
-        sequence[k,1,:,:,0] = operator
-        sequence[k,2,:,:,0] = digit2
+        x1 = 0
+        x2 = 0
         
-        # Find first operand
-        x1 = np.argmax(Et[j1])
-        # Find second operand
-        x2 = np.argmax(Et[j2])
+        for elemIdx in range(operationLength):
+            if elemIdx < digitOneLength:
+                for digitOneIdx in range(digitOneLength):
+                    # Generate random first operand index
+                    j1 = randrange(0, Dg.shape[0])
+                    # Reshape first operand image
+                    digitOne = np.reshape(Dg[j1,:], [Sm.shape[1], Sm.shape[2]])
+                    # Store first operand image
+                    sequence[k, elemIdx, :, :, 0] = digitOne
+                    # Find first operand
+                    x1 += np.argmax(Et[j1])
+            elif elemIdx > digitOneLength:
+                for digitTwoIdx in range(digitOneLength):
+                    # Generate random second operand index
+                    j2 = randrange(0, Dg.shape[0])
+                    # Reshape second operand image
+                    digitTwo = np.reshape(Dg[j2,:], [Sm.shape[1], Sm.shape[2]])
+                    # Store second operand image
+                    sequence[k, elemIdx, :, :, 0] = digitTwo
+                    # Find second operand
+                    x2 += np.argmax(Et[j2])
+        
+        # Generate random operator index
+        operatorIdx = randrange(0, Sm.shape[0])
+        # Store operator image
+        operator = Sm[operatorIdx,:,:]
+        sequence[k, elemIdx, :, :, 0] = operator
         # Find operator
-        y =  np.argmax(Op[i])
+        y = np.argmax(Op[operatorIdx])
         
+        # Compute operation result
         if (y == 0):
-            result[k]= x1 + x2 # addition
+            # addition
+            result[k]= x1 + x2
         elif (y == 1):
-            result[k]= x1 - x2 # subtraction
-        elif (y == 2):
-            result[k]= x1 * x2 # multiplication
-        elif (y == 3):
-            result[k]= x1 / x2 # division
+            # subtraction
+            result[k]= x1 - x2
         
         operands[k,0] = x1
         operands[k,1] = y
@@ -94,7 +108,7 @@ def generateSequence(Dg, Et, Sm, Op, total):
         
     return sequence, result, operands
 
-#seq, res, ops = generateSequence(digitos, digitos_label, simbolos_sr, simbolos_label_sr,  20)
+#seq, res, ops = generateSequence(digitos, digitos_label, simbolos_sr, simbolos_label_sr,  20, 1, 1)
 
 # In[7]:
 
@@ -163,7 +177,7 @@ def max_pool_2x2(x):
 ## CARGAR CONVNET PRE-ENTRENADA
 import cPickle as pickle
 CONVNET = pickle.load(open('convnet.pkl'))
-print 'Modelo CONVNET cargado'
+print '- Loaded convolutional network'
 
 # particiones de la imagen ------------------- ????????????????????????????
 # La convolución computará 32 característica para cada sector [5, 5] 
@@ -224,12 +238,15 @@ training_iters = 1000000
 batch_size = 64
 display_step = 10
 
-
 # In[10]:
 
 n_input = 1024 # salida de la red convolucional y entrada a la RNN
-n_steps = 3 # timesteps: tamaño de secuencias
+n_first_digit_length = 2
+n_second_digit_length = 1
+n_steps = n_first_digit_length + 1 + n_second_digit_length # timesteps: tamaño de secuencias
 n_hidden = 512 # hidden layer num of features || tamano de la memoria
+
+assert(n_steps <= 11)
 
 # In[11]:
 
@@ -266,10 +283,32 @@ def RNN(_X, _istate, _weights, _biases):
     #_X = tf.reshape(_X, [-1, n_input]) # (n_steps*batch_size, n_input)
     # Linear activation  ==> convolutional net
     #_X = tf.matmul(_X, _weights['hidden']) + _biases['hidden']
-        
-    A = CNN(_X[0,:,:,:,:])
-    B = CNN(_X[1,:,:,:,:])
-    C = CNN(_X[2,:,:,:,:])
+    
+    sequence = []
+    
+    for seqIdx in range(n_steps):
+        if seqIdx > 0:
+            sequence.append(CNN(_X[0,:,:,:,:]))
+        elif seqIdx > 1:
+            sequence.append(CNN(_X[1,:,:,:,:]))
+        elif seqIdx > 2:
+            sequence.append(CNN(_X[2,:,:,:,:]))
+        elif seqIdx > 3:
+            sequence.append(CNN(_X[3,:,:,:,:]))
+        elif seqIdx > 4:
+            sequence.append(CNN(_X[4,:,:,:,:]))
+        elif seqIdx > 5:
+            sequence.append(CNN(_X[5,:,:,:,:]))
+        elif seqIdx > 6:
+            sequence.append(CNN(_X[6,:,:,:,:]))
+        elif seqIdx > 7:
+            sequence.append(CNN(_X[7,:,:,:,:]))
+        elif seqIdx > 8:
+            sequence.append(CNN(_X[8,:,:,:,:]))
+        elif seqIdx > 9:
+            sequence.append(CNN(_X[9,:,:,:,:]))
+        elif seqIdx > 10:
+            sequence.append(CNN(_X[10,:,:,:,:]))
     
     # Define a lstm cell with tensorflow
     lstm_cell = rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
@@ -277,7 +316,7 @@ def RNN(_X, _istate, _weights, _biases):
     #_X = tf.split(0, n_steps, _X) # n_steps * (batch_size, n_hidden)
     
     # Get lstm cell output
-    outputs, states = rnn.rnn(lstm_cell, [A,B,C], initial_state=_istate)
+    outputs, states = rnn.rnn(lstm_cell, sequence, initial_state=_istate)
     
     # Linear activation
     # Get inner loop last output
@@ -314,8 +353,9 @@ with tf.Session() as sess:
     sess.run(init)
     step = 1
     # Keep training until reach max iterations
+    print "- Optimization started"
     while step < training_iters:
-        batch_xs, batch_ys, batch_ops = generateSequence(digitos, digitos_label, simbolos_sr, simbolos_label_sr, batch_size)
+        batch_xs, batch_ys, batch_ops = generateSequence(digitos, digitos_label, simbolos_sr, simbolos_label_sr, batch_size, n_first_digit_length, n_second_digit_length)
         # Fit training using batch data
         sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2*n_hidden))})
         if step % display_step == 0:
@@ -323,18 +363,17 @@ with tf.Session() as sess:
             loss, acc, prd = sess.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2*n_hidden))})
             # Calculate batch loss
             #loss = sess.run(cost, feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2*n_hidden))})
-            print "Iter " + str(step) + ", Minibatch Error= " + "{:.6f}".format(np.sqrt(loss)) +                   ", Training Accuracy= " + "{:.5f}".format(acc)
+            print "  Iteration=" + str(step) + ", Minibatch Error=" + "{:.6f}".format(np.sqrt(loss)) + ", Training Accuracy=" + "{:.5f}".format(acc)
             #print CNN(batch_xs[0,0:3,:,:,:].astype('float32')).eval(),batch_ops[0],batch_ys[0],prd[0]
-            print batch_ops[0],batch_ys[0],prd[0]
+            print " ", batch_ops[0], batch_ys[0], prd[0]
         # Increase step
         step += 1
-    print "Optimization Finished!"
-    batch_xs, batch_ys, batch_ops = generateSequence(digitos, digitos_label, simbolos_sr, simbolos_label_sr, batch_size)
+    print "- Optimization finished"
+    batch_xs, batch_ys, batch_ops = generateSequence(digitos, digitos_label, simbolos_sr, simbolos_label_sr, batch_size, n_first_digit_length, n_second_digit_length)
     # Calculate batch accuracy
-    pred = sess.run(pred, feed_dict={x: batch_xs, y: batch_ys,
-                                        istate: np.zeros((batch_size, 2*n_hidden))})
-    print 'GT', batch_ys, batch_ops
-    print 'Pred', pred
+    pred = sess.run(pred, feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2*n_hidden))})
+    print '  GT', batch_ys, batch_ops
+    print '  Pred', pred
 
 # In[ ]:
 
