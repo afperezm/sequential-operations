@@ -3,3 +3,4 @@ stderr
 MNIST_DATA/
 convnet.pkl
 *.pyc
+Cargar_rnn.py
