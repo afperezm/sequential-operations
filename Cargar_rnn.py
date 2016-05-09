@@ -20,8 +20,8 @@ sesion = tf.InteractiveSession()
 
 # In[3]:
 
-simbolos = np.load('./DATA_TRAIN_IMAGES.npy')
-simbolos_label = np.load('./DATA_TRAIN_LABELS.npy')
+simbolos = np.load('./SYMBOLS_DATA/DATA_TRAIN_IMAGES.npy')
+simbolos_label = np.load('./SYMBOLS_DATA/DATA_TRAIN_LABELS.npy')
 digitos = mnist.train.images
 digitos_label = mnist.train.labels
 #digitos.shape

@@ -1,12 +1,12 @@
-from data import generate_sequence
-from data import load_data
-from learner import RecurrentNeuralLearner
-from trainer import AgentTrainer
+from seqops.data import generate_sequence
+from seqops.data import load_data
+from seqops.learner import RecurrentNeuralLearner
+from seqops.trainer import AgentTrainer
 
 ## In[1]: Load training data
 
-train_images_file = "./DATA_TRAIN_IMAGES.npy"
-train_labels_file = "./DATA_TRAIN_LABELS.npy"
+train_images_file = "./SYMBOLS_DATA/DATA_TRAIN_IMAGES.npy"
+train_labels_file = "./SYMBOLS_DATA/DATA_TRAIN_LABELS.npy"
 
 print "- Loading training data"
 
@@ -52,8 +52,8 @@ print "  Finished"
 
 ## In[4]: Test agent
 
-test_images_file = "./DATA_TEST_IMAGES.npy"
-test_labels_file = "./DATA_TEST_LABELS.npy"
+test_images_file = "./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
+test_labels_file = "./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
 
 print "- Loading testing data"
 
