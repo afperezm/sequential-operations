@@ -1,5 +1,5 @@
 stdout
 stderr
-*.gz
-*.pyc
+MNIST_DATA/
 convnet.pkl
+*.pyc
