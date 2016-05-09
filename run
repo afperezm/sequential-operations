@@ -10,7 +10,7 @@ n_hidden=512
 n_first_digit_length=1
 n_second_digit_length=1
 training_iters=10000
-display_step=1
+display_step=100
 test_images_file="./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
 test_labels_file="./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
 
