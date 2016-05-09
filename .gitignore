@@ -2,3 +2,4 @@ stdout
 stderr
 *.gz
 *.pyc
+convnet.pkl
