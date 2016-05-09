@@ -74,7 +74,7 @@ def generateSequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLen
                     # Find first operand
                     x1 += np.argmax(Et[j1])
             elif elemIdx > digitOneLength:
-                for digitTwoIdx in range(digitOneLength):
+                for digitTwoIdx in range(digitTwoLength):
                     # Generate random second operand index
                     j2 = randrange(0, Dg.shape[0])
                     # Reshape second operand image
