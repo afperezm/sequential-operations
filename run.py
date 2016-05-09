@@ -52,19 +52,19 @@ print "  Finished"
 
 ## In[4]: Test agent
 
-#test_images_file = "./DATA_TEST_IMAGES.npy"
-#test_labels_file = "./DATA_TEST_LABELS.npy"
+test_images_file = "./DATA_TEST_IMAGES.npy"
+test_labels_file = "./DATA_TEST_LABELS.npy"
 
-#print "- Loading testing data"
+print "- Loading testing data"
 
-#digits, digit_labels, symbols, symbol_labels = load_data(test_images_file, test_labels_file)
+digits, digit_labels, symbols, symbol_labels = load_data(test_images_file, test_labels_file)
 
-#print "  Finished"
+print "  Finished"
 
-#print "- Testing agent"
+print "- Testing agent"
 
-#batch_ys, batch_ops, pred = trainer.test(digits, digit_labels, symbols, symbol_labels)
+batch_ys, batch_ops, pred = trainer.test(digits, digit_labels, symbols, symbol_labels)
 
-#print '  GT', batch_ys, batch_ops
-#print '  Pred', pred
+print '  GT', batch_ys, batch_ops
+print '  Pred', pred
 
