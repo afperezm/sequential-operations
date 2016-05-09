@@ -25,7 +25,7 @@ learning_rate = 0.001
 batch_size = 64
 n_input = 1024
 n_hidden = 512
-n_first_digit_length = 2
+n_first_digit_length = 1
 n_second_digit_length = 1
 n_steps = n_first_digit_length + 1 + n_second_digit_length
 
@@ -40,8 +40,8 @@ print "  Finished"
 
 ## In[3]: Train agent
 
-training_iters = 1000000
-display_step = 10
+training_iters = 1000
+display_step = 50
 
 print "- Training agent"
 
