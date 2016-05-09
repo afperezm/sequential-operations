@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export CUDA_VISIBLE_DEVICES=-1
+
 train_images_file="./SYMBOLS_DATA/DATA_TRAIN_IMAGES.npy"
 train_labels_file="./SYMBOLS_DATA/DATA_TRAIN_LABELS.npy"
 convnet_file="./CONVNET_DATA/convnet.pkl"
