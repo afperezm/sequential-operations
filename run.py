@@ -67,3 +67,4 @@ batch_ys, batch_ops, pred = trainer.test(digits, digit_labels, symbols, symbol_l
 
 print '  GT', batch_ys, batch_ops
 print '  Pred', pred
+

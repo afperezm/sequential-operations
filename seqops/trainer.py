@@ -41,7 +41,7 @@ class AgentTrainer(object):
             # Generate random sequence from testing data
             batch_xs, batch_ys, batch_ops = generate_sequence(digits, digit_labels, symbols, symbol_labels, self.agent.batch_size, self.n_first_digit_length, self.n_second_digit_length)
             # Calculate batch accuracy
-            pred = session.run(pred, feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * self.agent.n_hidden))})
+            pred = session.run(self.agent.pred, feed_dict={self.agent.x: batch_xs, self.agent.y: batch_ys, self.agent.istate: np.zeros((self.agent.batch_size, 2 * self.agent.n_hidden))})
             
             return [batch_ys, batch_ops, pred]
 
