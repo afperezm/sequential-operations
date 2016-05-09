@@ -20,7 +20,7 @@ print "- Size of sequence tensor:", sequence.shape
 
 ## In[2]: Create agent
 
-convnet_file = "convnet.pkl"
+convnet_file = "./CONVNET_DATA/convnet.pkl"
 learning_rate = 0.001
 batch_size = 64
 n_input = 1024
@@ -67,4 +67,3 @@ batch_ys, batch_ops, pred = trainer.test(digits, digit_labels, symbols, symbol_l
 
 print '  GT', batch_ys, batch_ops
 print '  Pred', pred
-

@@ -176,7 +176,7 @@ def max_pool_2x2(x):
 
 ## CARGAR CONVNET PRE-ENTRENADA
 import cPickle as pickle
-CONVNET = pickle.load(open('convnet.pkl'))
+CONVNET = pickle.load(open('./CONVNET_DATA/convnet.pkl'))
 print '- Loaded convolutional network'
 
 # particiones de la imagen ------------------- ????????????????????????????
