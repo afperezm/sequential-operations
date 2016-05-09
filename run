@@ -1,0 +1,21 @@
+#!/bin/bash
+
+train_images_file="./SYMBOLS_DATA/DATA_TRAIN_IMAGES.npy"
+train_labels_file="./SYMBOLS_DATA/DATA_TRAIN_LABELS.npy"
+convnet_file="./CONVNET_DATA/convnet.pkl"
+learning_rate=0.001
+batch_size=64
+n_input=1024
+n_hidden=512
+n_first_digit_length=1
+n_second_digit_length=1
+training_iters=10000
+display_step=1
+test_images_file="./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
+test_labels_file="./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
+
+args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $test_images_file $test_labels_file"
+
+echo $args
+
+python run.py $args
