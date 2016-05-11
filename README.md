@@ -4,7 +4,9 @@
 Make sure you have installed TensorFlow and Matplotlib on Python.
 
 ## Data
-There are three datasets used by this program MNIST_DATA, SYMBOLS_DATA and CONVNET_DATA. The first data set comes with TensorFlow, the second one is already present in this repository, and the third one (the pre-trained convolutional network used to identify digits) can be downloaded from https://www.dropbox.com/s/xdayqobr27o90if/convnet.pkl.
+There are three datasets used by this program MNIST_DATA, SYMBOLS_DATA and CONVNET_DATA. The first data set comes with TensorFlow, the second one is already present in this repository, and the third one (the pre-trained convolutional network used to identify digits) can be downloaded with the following command:
+
+```wget https://www.dropbox.com/s/xdayqobr27o90if/convnet.pkl.```
 
 ## Execution
 The bash script `run` on the `scripts` folder executes the Python script `run.py` which loads data, creates, trains, and tests the agent. The basch script holds all the possible arguments that can be passed to the script.
