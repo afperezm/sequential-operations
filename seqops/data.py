@@ -66,7 +66,7 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLe
         operatorIdx = randrange(0, Sm.shape[0])
         # Store operator image
         operator = Sm[operatorIdx,:,:]
-        sequence[k, elemIdx, :, :, 0] = operator
+        sequence[k, digitOneLength, :, :, 0] = operator
         # Find operator
         y = np.argmax(Op[operatorIdx])
         
