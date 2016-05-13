@@ -4,7 +4,7 @@ from random import randrange
 
 def load_data(train_images_file, train_labels_file):
     
-    mnist = input_data.read_data_sets('MNIST_DATA', one_hot = True)
+    mnist = input_data.read_data_sets('MNIST_DATA', one_hot=True)
     
     symbols = np.load(train_images_file)
     symbol_labels = np.load(train_labels_file)

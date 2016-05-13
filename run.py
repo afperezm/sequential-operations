@@ -24,9 +24,7 @@ args = parser.parse_args()
 
 ## In[1]: Load training data
 
-#train_images_file = "./SYMBOLS_DATA/DATA_TRAIN_IMAGES.npy"
 train_images_file = args.train_images_file
-#train_labels_file = "./SYMBOLS_DATA/DATA_TRAIN_LABELS.npy"
 train_labels_file = args.train_labels_file
 
 print "- Loading training data"
@@ -41,19 +39,12 @@ print "- Size of sequence tensor:", sequence.shape
 
 ## In[2]: Create agent
 
-#convnet_file = "./CONVNET_DATA/convnet.pkl"
 convnet_file = args.convnet_file
-# learning_rate = 0.001
 learning_rate = args.learning_rate
-#batch_size = 64
 batch_size = args.batch_size
-#n_input = 1024
 n_input = args.n_input
-#n_hidden = 512
 n_hidden = args.n_hidden
-#n_first_digit_length = 1
 n_first_digit_length = args.n_first_digit_length
-#n_second_digit_length = 1
 n_second_digit_length = args.n_second_digit_length
 n_steps = n_first_digit_length + 1 + n_second_digit_length
 
@@ -68,9 +59,7 @@ print "  Finished"
 
 ## In[3]: Train agent
 
-#training_iters = 10000
 training_iters = args.training_iters
-#display_step = 500
 display_step = args.display_step
 
 print "- Training agent"
@@ -82,9 +71,7 @@ print "  Finished"
 
 ## In[4]: Test agent
 
-#test_images_file = "./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
 test_images_file = args.test_images_file
-#test_labels_file = "./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
 test_labels_file = args.test_labels_file
 
 print "- Loading testing data"
