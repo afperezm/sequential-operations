@@ -1,6 +1,15 @@
 # coding: utf-8
 
-## In[0]: Parse arguments
+import argparse
+import tensorflow as tf
+from tensorflow.models.rnn import rnn, rnn_cell
+import numpy as np
+from random import randint
+import random
+from random import randrange
+from tensorflow.examples.tutorials.mnist import input_data
+
+## In[1]: Parse arguments
 
 parser = argparse.ArgumentParser()
 parser.add_argument("train_images_file", help="training images file in NumPy standard binary file format")
@@ -17,19 +26,6 @@ parser.add_argument("display_step", help="how often must be shown training resul
 parser.add_argument("test_images_file", help="testing images file in NumPy standard binary file format")
 parser.add_argument("test_labels_file", help="testing labels file in NumPy standard binary file format")
 args = parser.parse_args()
-
-# In[1]:
-
-import tensorflow as tf
-from tensorflow.models.rnn import rnn, rnn_cell
-import numpy as np
-#get_ipython().magic(u'matplotlib inline')
-#import numpy as np
-from random import randint
-#import matplotlib.pyplot as plt
-import random
-from random import randrange
-from tensorflow.examples.tutorials.mnist import input_data
 
 # In[2]:
 
