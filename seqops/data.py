@@ -37,6 +37,14 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLe
     
     for k in range(sequenceLength):
         
+        # Generate random operator index
+        operatorIdx = randrange(0, Sm.shape[0])
+        # Store operator image
+        operator = Sm[operatorIdx,:,:]
+        sequence[k, digitOneLength, :, :, 0] = operator
+        # Find operator
+        y = np.argmax(Op[operatorIdx])
+        
         x1 = 0
         x2 = 0
         
@@ -61,14 +69,6 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLe
                     sequence[k, elemIdx, :, :, 0] = digitTwo
                     # Find second operand
                     x2 += np.argmax(Et[j2])
-        
-        # Generate random operator index
-        operatorIdx = randrange(0, Sm.shape[0])
-        # Store operator image
-        operator = Sm[operatorIdx,:,:]
-        sequence[k, digitOneLength, :, :, 0] = operator
-        # Find operator
-        y = np.argmax(Op[operatorIdx])
         
         # Compute operation result
         if (y == 0):
