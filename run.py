@@ -52,6 +52,7 @@ n_first_digit_length = args.n_first_digit_length
 n_second_digit_length = args.n_second_digit_length
 n_steps = n_first_digit_length + 1 + n_second_digit_length
 
+assert(n_steps >= 3)
 assert(n_steps <= 11)
 
 print "- Creating agent"
