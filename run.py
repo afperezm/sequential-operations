@@ -127,38 +127,30 @@ def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     # Output shape: (n_steps, batch_size, img_width, img_height, n_color_channels)
     _X = tf.transpose(_X, [1, 0, 2, 3, 4])
     
-    '''
-    A = buildConvnet(_X[0,:,:,:,:])
-    B = buildConvnet(_X[1,:,:,:,:])
-    C = buildConvnet(_X[2,:,:,:,:])
-    
-    sequence = [A, B, C]
-    '''
-    
     sequence = []
     
     for seqIdx in range(n_steps):
         if seqIdx > 0:
             sequence.append(buildConvnet(_X[0,:,:,:,:]))
-        elif seqIdx > 1:
+        if seqIdx > 1:
             sequence.append(buildConvnet(_X[1,:,:,:,:]))
-        elif seqIdx > 2:
+        if seqIdx > 2:
             sequence.append(buildConvnet(_X[2,:,:,:,:]))
-        elif seqIdx > 3:
+        if seqIdx > 3:
             sequence.append(buildConvnet(_X[3,:,:,:,:]))
-        elif seqIdx > 4:
+        if seqIdx > 4:
             sequence.append(buildConvnet(_X[4,:,:,:,:]))
-        elif seqIdx > 5:
+        if seqIdx > 5:
             sequence.append(buildConvnet(_X[5,:,:,:,:]))
-        elif seqIdx > 6:
+        if seqIdx > 6:
             sequence.append(buildConvnet(_X[6,:,:,:,:]))
-        elif seqIdx > 7:
+        if seqIdx > 7:
             sequence.append(buildConvnet(_X[7,:,:,:,:]))
-        elif seqIdx > 8:
+        if seqIdx > 8:
             sequence.append(buildConvnet(_X[8,:,:,:,:]))
-        elif seqIdx > 9:
+        if seqIdx > 9:
             sequence.append(buildConvnet(_X[9,:,:,:,:]))
-        elif seqIdx > 10:
+        if seqIdx > 10:
             sequence.append(buildConvnet(_X[10,:,:,:,:]))
     
     # Define a lstm cell with tensorflow
