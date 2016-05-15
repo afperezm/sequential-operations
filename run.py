@@ -229,8 +229,8 @@ with tf.Session() as session:
         if step % display_step == 0:
             # Calculate batch accuracy, loss and prediction
             loss, acc, prd = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
-            print "  Iteration=" + str(step) + ", Minibatch Error=" + "{:.6f}".format(np.sqrt(loss)) + ", Training Accuracy=" + "{:.5f}".format(acc)
-            print " ", batch_ops[0], batch_ys[0], prd[0]
+            print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(acc)
+            #print " ", batch_ops[0], batch_ys[0], prd[0]
         # Increase step
         step += 1
 
