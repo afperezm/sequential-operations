@@ -57,11 +57,6 @@ assert(n_steps <= 11)
 
 print "- Creating agent"
 
-'''
-agent = RecurrentNeuralLearner(convnet_file, learning_rate, batch_size, n_input, n_hidden, n_steps)
-agent.createNetwork()
-'''
-
 def buildWeightVariable(shape, init=None):
     """
     Builds the weights variable for the convolutional network.
@@ -207,11 +202,6 @@ training_iters = args.training_iters
 display_step = args.display_step
 
 print "- Training agent"
-
-'''
-trainer = AgentTrainer(agent, training_iters, display_step, n_first_digit_length, n_second_digit_length)
-trainer.train(digits, digit_labels, symbols, symbol_labels)
-'''
 
 # Initialize variables
 init = tf.initialize_all_variables()
