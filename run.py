@@ -37,7 +37,7 @@ digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, trai
 
 print "  Finished"
 
-sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels,  20, 1, 1)
+sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels, 20, 1, 1)
 
 print "- Size of sequence tensor:", sequence.shape
 
