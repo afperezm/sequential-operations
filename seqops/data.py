@@ -1,5 +1,6 @@
 import numpy as np
 from tensorflow.examples.tutorials.mnist import input_data
+from random import choice
 from random import randrange
 
 def load_data(train_images_file, train_labels_file):
@@ -23,17 +24,17 @@ def load_data(train_images_file, train_labels_file):
     
     return [digits, digit_labels, add_sub_symbols, add_sub_symbol_labels]
 
-def generate_sequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLength):
+def generate_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandTwoLength):
     """
     Generates a random sequence of 'sequenceLength' triplets of operands and operators.
     """
     
-    operationLength = digitOneLength + 1 + digitTwoLength
-    
     # Initialize return variables
-    sequence = np.zeros((sequenceLength, operationLength, Sm.shape[1], Sm.shape[2], 1))
+    sequence = np.zeros((sequenceLength, operandOneLength + 1 + operandTwoLength, Sm.shape[1], Sm.shape[2], 1))
     result = np.zeros((sequenceLength, 1))
     operands = np.zeros((sequenceLength, 3))
+    
+    non_zero_indices = [i for i in range(Et.shape[0]) if Et[i, 0] == 0]
     
     for k in range(sequenceLength):
         
@@ -41,34 +42,39 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, digitOneLength, digitTwoLe
         operatorIdx = randrange(0, Sm.shape[0])
         # Store operator image
         operator = Sm[operatorIdx,:,:]
-        sequence[k, digitOneLength, :, :, 0] = operator
+        sequence[k, operandOneLength, :, :, 0] = operator
         # Find operator
         y = np.argmax(Op[operatorIdx])
         
         x1 = 0
+        
+        for digitIdx in range(operandOneLength):
+            # Generate random first operand index
+            if operandOneLength > 1 and digitIdx == 0:
+              j1 = choice(non_zero_indices)
+            else:
+              j1 = randrange(0, Dg.shape[0])
+            # Reshape first operand image
+            digitImg = np.reshape(Dg[j1,:], [Sm.shape[1], Sm.shape[2]])
+            # Store first operand image
+            sequence[k, digitIdx, :, :, 0] = digitImg
+            # Find first operand
+            x1 += np.argmax(Et[j1]) * pow(10, operandOneLength - 1 - digitIdx)
+        
         x2 = 0
         
-        for elemIdx in range(operationLength):
-            if elemIdx < digitOneLength:
-                for digitOneIdx in range(digitOneLength):
-                    # Generate random first operand index
-                    j1 = randrange(0, Dg.shape[0])
-                    # Reshape first operand image
-                    digitOne = np.reshape(Dg[j1,:], [Sm.shape[1], Sm.shape[2]])
-                    # Store first operand image
-                    sequence[k, elemIdx, :, :, 0] = digitOne
-                    # Find first operand
-                    x1 += np.argmax(Et[j1])
-            elif elemIdx > digitOneLength:
-                for digitTwoIdx in range(digitTwoLength):
-                    # Generate random second operand index
-                    j2 = randrange(0, Dg.shape[0])
-                    # Reshape second operand image
-                    digitTwo = np.reshape(Dg[j2,:], [Sm.shape[1], Sm.shape[2]])
-                    # Store second operand image
-                    sequence[k, elemIdx, :, :, 0] = digitTwo
-                    # Find second operand
-                    x2 += np.argmax(Et[j2])
+        for digitIdx in range(operandTwoLength):
+            # Generate random second operand index
+            if operandTwoLength > 1 and digitIdx == 0:
+              j2 = choice(non_zero_indices)
+            else:
+              j2 = randrange(0, Dg.shape[0])
+            # Reshape second operand image
+            digitImg = np.reshape(Dg[j2,:], [Sm.shape[1], Sm.shape[2]])
+            # Store second operand image
+            sequence[k, operandOneLength + digitIdx, :, :, 0] = digitImg
+            # Find second operand
+            x2 += np.argmax(Et[j2]) * pow(10, operandTwoLength - 1 - digitIdx)
         
         # Compute operation result
         if (y == 0):
