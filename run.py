@@ -125,29 +125,28 @@ def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     
     sequence = []
     
-    for seqIdx in range(n_steps):
-        if seqIdx > 0:
-            sequence.append(buildConvnet(_X[0,:,:,:,:]))
-        if seqIdx > 1:
-            sequence.append(buildConvnet(_X[1,:,:,:,:]))
-        if seqIdx > 2:
-            sequence.append(buildConvnet(_X[2,:,:,:,:]))
-        if seqIdx > 3:
-            sequence.append(buildConvnet(_X[3,:,:,:,:]))
-        if seqIdx > 4:
-            sequence.append(buildConvnet(_X[4,:,:,:,:]))
-        if seqIdx > 5:
-            sequence.append(buildConvnet(_X[5,:,:,:,:]))
-        if seqIdx > 6:
-            sequence.append(buildConvnet(_X[6,:,:,:,:]))
-        if seqIdx > 7:
-            sequence.append(buildConvnet(_X[7,:,:,:,:]))
-        if seqIdx > 8:
-            sequence.append(buildConvnet(_X[8,:,:,:,:]))
-        if seqIdx > 9:
-            sequence.append(buildConvnet(_X[9,:,:,:,:]))
-        if seqIdx > 10:
-            sequence.append(buildConvnet(_X[10,:,:,:,:]))
+    if n_steps > 0:
+        sequence.append(buildConvnet(_X[0,:,:,:,:]))
+    if n_steps > 1:
+        sequence.append(buildConvnet(_X[1,:,:,:,:]))
+    if n_steps > 2:
+        sequence.append(buildConvnet(_X[2,:,:,:,:]))
+    if n_steps > 3:
+        sequence.append(buildConvnet(_X[3,:,:,:,:]))
+    if n_steps > 4:
+        sequence.append(buildConvnet(_X[4,:,:,:,:]))
+    if n_steps > 5:
+        sequence.append(buildConvnet(_X[5,:,:,:,:]))
+    if n_steps > 6:
+        sequence.append(buildConvnet(_X[6,:,:,:,:]))
+    if n_steps > 7:
+        sequence.append(buildConvnet(_X[7,:,:,:,:]))
+    if n_steps > 8:
+        sequence.append(buildConvnet(_X[8,:,:,:,:]))
+    if n_steps > 9:
+        sequence.append(buildConvnet(_X[9,:,:,:,:]))
+    if n_steps > 10:
+        sequence.append(buildConvnet(_X[10,:,:,:,:]))
     
     # Define a lstm cell with tensorflow
     lstm_cell = rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
