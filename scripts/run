@@ -21,4 +21,4 @@ args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_
 echo $args
 
 cd sequential-operations
-python run.py $args
+python -u run.py $args
