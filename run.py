@@ -125,74 +125,39 @@ def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     
     sequence = []
     
-    if n_steps == 3:
+    if n_steps > 0:
         A = buildConvnet(_X[0,:,:,:,:])
+        sequence.append(A)
+    if n_steps > 1:
         B = buildConvnet(_X[1,:,:,:,:])
+        sequence.append(B)
+    if n_steps > 2:
         C = buildConvnet(_X[2,:,:,:,:])
-        sequence = [A, B, C]
-    if n_steps == 4:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
+        sequence.append(C)
+    if n_steps > 3:
         D = buildConvnet(_X[3,:,:,:,:])
-        sequence = [A, B, C, D]
-    if n_steps == 5:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
-        D = buildConvnet(_X[3,:,:,:,:])
+        sequence.append(D)
+    if n_steps > 4:
         E = buildConvnet(_X[4,:,:,:,:])
-        sequence = [A, B, C, D, E]
-    if n_steps == 6:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
-        D = buildConvnet(_X[3,:,:,:,:])
-        E = buildConvnet(_X[4,:,:,:,:])
+        sequence.append(E)
+    if n_steps > 5:
         F = buildConvnet(_X[5,:,:,:,:])
-        sequence = [A, B, C, D, E, F]
-    if n_steps == 7:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
-        D = buildConvnet(_X[3,:,:,:,:])
-        E = buildConvnet(_X[4,:,:,:,:])
-        F = buildConvnet(_X[5,:,:,:,:])
+        sequence.append(F)
+    if n_steps > 6:
         G = buildConvnet(_X[6,:,:,:,:])
-        sequence = [A, B, C, D, E, F, G]
-    if n_steps == 8:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
-        D = buildConvnet(_X[3,:,:,:,:])
-        E = buildConvnet(_X[4,:,:,:,:])
-        F = buildConvnet(_X[5,:,:,:,:])
-        G = buildConvnet(_X[6,:,:,:,:])
+        sequence.append(G)
+    if n_steps > 7:
         H = buildConvnet(_X[7,:,:,:,:])
-        sequence = [A, B, C, D, E, F, G, H]
-    if n_steps == 9:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
-        D = buildConvnet(_X[3,:,:,:,:])
-        E = buildConvnet(_X[4,:,:,:,:])
-        F = buildConvnet(_X[5,:,:,:,:])
-        G = buildConvnet(_X[6,:,:,:,:])
-        H = buildConvnet(_X[7,:,:,:,:])
+        sequence.append(H)
+    if n_steps > 8:
         I = buildConvnet(_X[8,:,:,:,:])
-        sequence = [A, B, C, D, E, F, G, H, I]
-    if n_steps == 10:
-        A = buildConvnet(_X[0,:,:,:,:])
-        B = buildConvnet(_X[1,:,:,:,:])
-        C = buildConvnet(_X[2,:,:,:,:])
-        D = buildConvnet(_X[3,:,:,:,:])
-        E = buildConvnet(_X[4,:,:,:,:])
-        F = buildConvnet(_X[5,:,:,:,:])
-        G = buildConvnet(_X[6,:,:,:,:])
-        H = buildConvnet(_X[7,:,:,:,:])
-        I = buildConvnet(_X[8,:,:,:,:])
+        sequence.append(I)
+    if n_steps > 9:
         J = buildConvnet(_X[9,:,:,:,:])
-        sequence = [A, B, C, D, E, F, G, H, I, J]
+        sequence.append(J)
+    if n_steps > 10:
+        K = buildConvnet(_X[10,:,:,:,:])
+        sequence.append(K)
     
     # Define a lstm cell with tensorflow
     lstm_cell = rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
