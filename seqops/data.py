@@ -72,7 +72,7 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandT
             # Reshape second operand image
             digitImg = np.reshape(Dg[j2,:], [Sm.shape[1], Sm.shape[2]])
             # Store second operand image
-            sequence[k, operandOneLength + digitIdx, :, :, 0] = digitImg
+            sequence[k, operandOneLength + 1 + digitIdx, :, :, 0] = digitImg
             # Find second operand
             x2 += np.argmax(Et[j2]) * pow(10, operandTwoLength - 1 - digitIdx)
         
