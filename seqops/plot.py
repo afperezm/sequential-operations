@@ -33,7 +33,7 @@ def plot_sequence(sequence, seqIdx, filename):
 
 def plot_performance(data_fname, minibatch_error_plot_fname, training_accuracy_fname):
     
-    data = np.loadtxt(fname=filename, dtype="string", skiprows=11)
+    data = np.loadtxt(fname=data_fname, dtype="string", skiprows=11)
     
     assert(len(data.shape) == 2)
     assert(data.shape[0] > 0)
