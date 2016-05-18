@@ -114,6 +114,25 @@ def buildConvnet(x_image):
     
     return h_fc1
 
+# Graph input
+x = tf.placeholder("float", [None, n_steps, 28, 28, 1])
+# Tensorflow LSTM cell requires 2 x n_hidden length (state & cell)
+istate = tf.placeholder("float", [None, 2 * n_hidden])
+y = tf.placeholder("float", [None, 1])
+
+# Define hidden layer weights
+weights = {
+    'hidden': tf.Variable(tf.random_normal([n_input, n_hidden])),
+    'out1': tf.Variable(tf.truncated_normal([n_hidden,512])),
+    'out2': tf.Variable(tf.truncated_normal([512, 1]))
+}
+
+biases = {
+    'hidden': tf.Variable(tf.random_normal([n_hidden])),
+    'out1': tf.Variable(tf.zeros([512])),
+    'out2': tf.Variable(tf.zeros([1]))
+}
+
 def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     
     # Reshape _X to prepare input to hidden activation by permuting first
@@ -123,6 +142,11 @@ def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     # Output shape: (n_steps, batch_size, img_width, img_height, n_color_channels)
     _X = tf.transpose(_X, [1, 0, 2, 3, 4])
     
+    A = buildConvnet(_X[0,:,:,:,:])
+    B = buildConvnet(_X[1,:,:,:,:])
+    C = buildConvnet(_X[2,:,:,:,:])
+
+    '''
     sequence = []
     
     if n_steps > 0:
@@ -158,12 +182,13 @@ def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     if n_steps > 10:
         K = buildConvnet(_X[10,:,:,:,:])
         sequence.append(K)
+    '''
     
     # Define a lstm cell with tensorflow
     lstm_cell = rnn_cell.BasicLSTMCell(n_hidden, forget_bias=1.0)
     
     # Get lstm cell output
-    outputs, states = rnn.rnn(lstm_cell, sequence, initial_state=_istate)
+    outputs, states = rnn.rnn(lstm_cell, [A, B, C], initial_state=_istate)
     
     # Linear activation
     # Get inner loop last output
@@ -171,26 +196,6 @@ def buildRecurrentNeuralNetwork(_X, _istate, _weights, _biases):
     out2 = tf.matmul(out1, _weights['out2']) + _biases['out2']
     
     return out2
-
-# Graph input
-x = tf.placeholder("float", [None, n_steps, 28, 28, 1])
-y = tf.placeholder("float", [None, 1])
-
-# Tensorflow LSTM cell requires 2 x n_hidden length (state & cell)
-istate = tf.placeholder("float", [None, 2 * n_hidden])
-
-# Define hidden layer weights
-weights = {
-    'hidden': tf.Variable(tf.random_normal([n_input, n_hidden])),
-    'out1': tf.Variable(tf.truncated_normal([n_hidden,512])),
-    'out2': tf.Variable(tf.truncated_normal([512, 1]))
-}
-
-biases = {
-    'hidden': tf.Variable(tf.random_normal([n_hidden])),
-    'out1': tf.Variable(tf.zeros([512])),
-    'out2': tf.Variable(tf.zeros([1]))
-}
 
 pred = buildRecurrentNeuralNetwork(x, istate, weights, biases)
 
@@ -203,6 +208,7 @@ optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 # Evaluate model
 correct_pred = tf.equal(tf.round(pred), tf.round(y))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+prediccion = pred
 
 print "  Finished"
 

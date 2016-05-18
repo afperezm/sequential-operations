@@ -25,6 +25,9 @@ def load_data(train_images_file, train_labels_file):
     return [digits, digit_labels, add_sub_symbols, add_sub_symbol_labels]
 
 def generate_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandTwoLength):
+    return generate_single_length_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandTwoLength)
+
+def generate_var_length_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandTwoLength):
     """
     Generates a random sequence of 'sequenceLength' triplets of operands and operators.
     """
@@ -89,4 +92,31 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandT
         operands[k,2] = x2
         
     return sequence, result, operands
+
+def generate_single_length_sequence(Dg, Et, Sm, Op, total):
+    secuencia = np.zeros( (total, 3, 28,28,1) )
+    resultado = np.zeros((total, 1))
+    operandos = np.zeros((total, 3))
+    k = 0
+    for k in range(total): 
+        i = randrange(0, Op.shape[0]) 
+        j1 = randrange(0, 55000)
+        j2 = randrange(0, 55000)
+        digito1 =  np.reshape(Dg[j1,:],[28,28])
+        operador= Sm[i,:,:]
+        digito2 =  np.reshape(Dg[j2,:],[28,28])
+        secuencia [k,0,:,:,0] = digito1
+        secuencia [k,1,:,:,0] = operador
+        secuencia [k,2,:,:,0] = digito2
+        x1 = np.argmax(Et[j1])
+        x2 = np.argmax(Et[j2])
+        y =  np.argmax(Op[i])
+        if (y == 0 ):
+            resultado[k]= x1 + x2 
+        if (y == 1):
+            resultado[k]= x1 - x2 
+        operandos[k,0] = x1
+        operandos[k,1] = y
+        operandos[k,2] = x2
+    return secuencia, resultado, operandos
 
