@@ -181,14 +181,14 @@ istate = tf.placeholder("float", [None, 2 * n_hidden])
 
 # Define hidden layer weights
 weights = {
-    'hidden': tf.Variable(tf.random_normal([n_input, n_hidden])),
-    'out1': tf.Variable(tf.truncated_normal([n_hidden,512])),
-    'out2': tf.Variable(tf.truncated_normal([512, 1]))
+    'hidden': tf.Variable(tf.random_normal([n_input, n_hidden], stddev=0.1)),
+    'out1': tf.Variable(tf.truncated_normal([n_hidden, n_hidden], stddev=0.1)),
+    'out2': tf.Variable(tf.truncated_normal([n_hidden, 1], stddev=0.1))
 }
 
 biases = {
-    'hidden': tf.Variable(tf.random_normal([n_hidden])),
-    'out1': tf.Variable(tf.zeros([512])),
+    'hidden': tf.Variable(tf.random_normal([n_hidden], stddev=0.1)),
+    'out1': tf.Variable(tf.zeros([n_hidden])),
     'out2': tf.Variable(tf.zeros([1]))
 }
 
