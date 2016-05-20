@@ -9,6 +9,7 @@ from seqops.data import load_data
 ## In[0]: Parse arguments
 
 parser = argparse.ArgumentParser()
+parser.add_argument("mode", help="either train or test", choices=["train", "test"])
 parser.add_argument("train_images_file", help="training images file in NumPy standard binary file format")
 parser.add_argument("train_labels_file", help="training labels file in NumPy standard binary file format")
 parser.add_argument("convnet_file", help="convolutional network file in packing list file format")
@@ -25,16 +26,24 @@ parser.add_argument("test_labels_file", help="testing labels file in NumPy stand
 parser.add_argument("model_filename", help="filename used for saving network")
 args = parser.parse_args()
 
-## In[1]: Load training data
+mode = args.mode
+
+## In[1]: Load data
 
 train_images_file = args.train_images_file
 train_labels_file = args.train_labels_file
 
-print "- Loading training data"
+test_images_file = args.test_images_file
+test_labels_file = args.test_labels_file
 
-digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, train_labels_file)
-
-print "  Finished"
+if mode == "train":
+    print "- Loading training data"
+    digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, train_labels_file)
+    print "  Finished"
+else:
+    print "- Loading testing data"
+    digits, digit_labels, symbols, symbol_labels = load_data(test_images_file, test_labels_file)
+    print "  Finished"
 
 sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels, 20, 1, 1)
 
@@ -174,13 +183,16 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 print "  Finished"
 
-## In[3]: Train agent
+## In[3]: Train/Test agent
 
 training_iters = args.training_iters
 display_step = args.display_step
 model_filename = args.model_filename
 
-print "- Training agent"
+if mode == "train":
+    print "- Training agent"
+else:
+    print "- Testing agent"
 
 # Initialize variables
 init = tf.initialize_all_variables()
@@ -191,40 +203,30 @@ saver = tf.train.Saver()
 # Launch the graph
 with tf.Session() as session:
     session.run(init)
-    step = 1
-    # Keep training until reach max iterations
-    while step < training_iters:
-        # Generate random sequence from trainig data
+    if mode == "train":
+        step = 1
+        # Keep training until reach max iterations
+        while step < training_iters:
+            # Generate random sequence from trainig data
+            batch_xs, batch_ys, batch_ops = generate_sequence(digits, digit_labels, symbols, symbol_labels, batch_size, n_first_digit_length, n_second_digit_length)
+            # Fit training using batch data
+            session.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
+            if step % display_step == 0:
+                # Calculate batch accuracy, loss and prediction
+                loss, acc, prd = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
+                print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(acc)
+                #print " ", batch_ops[0], batch_ys[0], prd[0]
+            # Increase step
+            step += 1
+        saver.save(session, model_filename)
+    else:
+        saver.restore(session, model_filename)
+        # Generate random sequence from testing data
         batch_xs, batch_ys, batch_ops = generate_sequence(digits, digit_labels, symbols, symbol_labels, batch_size, n_first_digit_length, n_second_digit_length)
-        # Fit training using batch data
-        session.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
-        if step % display_step == 0:
-            # Calculate batch accuracy, loss and prediction
-            loss, acc, prd = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
-            print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(acc)
-            #print " ", batch_ops[0], batch_ys[0], prd[0]
-        # Increase step
-        step += 1
-    saver.save(session, model_filename)
+        # Calculate batch accuracy
+        loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
+        print "  Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(accuracy)
+        print np.hstack((batch_ops, batch_ys, prediction))
 
 print "  Finished"
-
-## In[4]: Test agent
-'''
-test_images_file = args.test_images_file
-test_labels_file = args.test_labels_file
-
-print "- Loading testing data"
-
-digits, digit_labels, symbols, symbol_labels = load_data(test_images_file, test_labels_file)
-
-print "  Finished"
-
-print "- Testing agent"
-
-batch_ys, batch_ops, pred = trainer.test(digits, digit_labels, symbols, symbol_labels)
-
-print '  GT', batch_ys, batch_ops
-print '  Pred', pred
-'''
 
