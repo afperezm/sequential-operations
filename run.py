@@ -5,8 +5,6 @@ import tensorflow as tf
 from tensorflow.models.rnn import rnn, rnn_cell
 from seqops.data import generate_sequence
 from seqops.data import load_data
-from seqops.learner import RecurrentNeuralLearner
-from seqops.trainer import AgentTrainer
 
 ## In[0]: Parse arguments
 
