@@ -22,6 +22,7 @@ parser.add_argument("training_iters", help="number of training iterations", type
 parser.add_argument("display_step", help="how often must be shown training results", type=int)
 parser.add_argument("test_images_file", help="testing images file in NumPy standard binary file format")
 parser.add_argument("test_labels_file", help="testing labels file in NumPy standard binary file format")
+parser.add_argument("model_filename", help="filename used for saving network")
 args = parser.parse_args()
 
 ## In[1]: Load training data
@@ -177,11 +178,15 @@ print "  Finished"
 
 training_iters = args.training_iters
 display_step = args.display_step
+model_filename = args.model_filename
 
 print "- Training agent"
 
 # Initialize variables
 init = tf.initialize_all_variables()
+
+# Initialize saver
+saver = tf.train.Saver()
 
 # Launch the graph
 with tf.Session() as session:
@@ -200,6 +205,7 @@ with tf.Session() as session:
             #print " ", batch_ops[0], batch_ys[0], prd[0]
         # Increase step
         step += 1
+    saver.save(session, model_filename)
 
 print "  Finished"
 
