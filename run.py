@@ -1,6 +1,7 @@
 import argparse
 import cPickle as pickle  
 import numpy as np
+import random
 import tensorflow as tf
 from tensorflow.models.rnn import rnn, rnn_cell
 from seqops.data import generate_sequence
@@ -222,6 +223,7 @@ with tf.Session() as session:
     else:
         saver.restore(session, model_filename)
         # Generate random sequence from testing data
+        random.seed(2016)
         batch_xs, batch_ys, batch_ops = generate_sequence(digits, digit_labels, symbols, symbol_labels, batch_size, n_first_digit_length, n_second_digit_length)
         # Calculate batch accuracy
         loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
