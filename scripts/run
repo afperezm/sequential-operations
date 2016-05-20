@@ -15,8 +15,9 @@ training_iters=10000
 display_step=100
 test_images_file="./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
 test_labels_file="./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
+model_filename="./model.ckpt"
 
-args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $test_images_file $test_labels_file"
+args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $test_images_file $test_labels_file $model_filename"
 
 echo $args
 
