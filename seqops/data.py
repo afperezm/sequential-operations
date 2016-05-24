@@ -3,7 +3,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 from random import choice
 from random import randrange
 
-def load_data(train_images_file, train_labels_file):
+def load_data(train_images_file, train_labels_file, included_operators = ["+", "-", "*", "/"]):
     
     mnist = input_data.read_data_sets('MNIST_DATA', one_hot=True)
     
@@ -13,16 +13,27 @@ def load_data(train_images_file, train_labels_file):
     digits = mnist.train.images
     digit_labels = mnist.train.labels
     
+    symbol_indices = []
+    
+    if "+" in included_operators:
+        symbol_indices.append(0)
+    if "-" in included_operators:
+        symbol_indices.append(1)
+    if "*" in included_operators:
+        symbol_indices.append(2)
+    if "/" in included_operators:
+        symbol_indices.append(3)
+    
     # Find indices of symbols labeled as addition or subtraction
-    idx = np.sum(symbol_labels[:,0:2], axis=1)
+    idx = np.sum(symbol_labels[:,symbol_indices], axis=1)
     
     # Obtain labels of symbols labeled as addition or subtraction
-    add_sub_symbol_labels = symbol_labels[idx>0, 0:2]
+    filtered_symbol_labels = symbol_labels[idx>0, :][:, symbol_indices]
     
     # Obtain symbols labeled as addition or subtraction
-    add_sub_symbols = symbols[idx>0, :, :]
+    filtered_symbols = symbols[idx>0, :, :]
     
-    return [digits, digit_labels, add_sub_symbols, add_sub_symbol_labels]
+    return [digits, digit_labels, filtered_symbols, filtered_symbol_labels]
 
 def generate_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandTwoLength):
     """
@@ -83,6 +94,12 @@ def generate_sequence(Dg, Et, Sm, Op, sequenceLength, operandOneLength, operandT
         elif (y == 1):
             # subtraction
             result[k] = x1 - x2
+        elif (y == 2):
+            # multiplication
+            result[k] = x1 * x2
+        elif (y == 3):
+            # division
+            result[k] = x1 / x2
         
         operands[k,0] = x1
         operands[k,1] = y

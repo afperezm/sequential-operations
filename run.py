@@ -37,11 +37,11 @@ test_images_file = args.test_images_file
 test_labels_file = args.test_labels_file
 
 print "- Loading training data"
-digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, train_labels_file)
+digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, train_labels_file, included_operators=["+", "-"])
 print "  Finished"
 
 print "- Loading testing data"
-test_digits, test_digit_labels, test_symbols, test_symbol_labels = load_data(test_images_file, test_labels_file)
+test_digits, test_digit_labels, test_symbols, test_symbol_labels = load_data(test_images_file, test_labels_file, included_operators=["+", "-"])
 print "  Finished"
 
 sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels, 20, 1, 1)
