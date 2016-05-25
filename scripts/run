@@ -18,8 +18,9 @@ test_images_file="./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
 test_labels_file="./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
 test_seed=2016
 test_batch_size=1000
+operations="+-*/"
 
-args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $model_filename $test_images_file $test_labels_file $test_seed $test_batch_size"
+args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $model_filename $test_images_file $test_labels_file $test_seed $test_batch_size -ops=$operations"
 
 echo $args
 

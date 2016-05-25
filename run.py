@@ -2,12 +2,19 @@ import argparse
 import cPickle as pickle  
 import numpy as np
 import random
+import re
 import tensorflow as tf
 from tensorflow.models.rnn import rnn, rnn_cell
 from seqops.data import generate_sequence
 from seqops.data import load_data
 
 ## In[0]: Parse arguments
+
+def SpecialString(v):
+    if re.match("^(\+|\-|\*|\/)+$", v):
+        return list(v)
+    else:
+        raise argparse.ArgumentTypeError("string '%s' does not match required format"%(v,))
 
 parser = argparse.ArgumentParser()
 parser.add_argument("train_images_file", help="training images file in NumPy standard binary file format")
@@ -26,6 +33,8 @@ parser.add_argument("test_images_file", help="testing images file in NumPy stand
 parser.add_argument("test_labels_file", help="testing labels file in NumPy standard binary file format")
 parser.add_argument("test_seed", help="testing seed", type=int)
 parser.add_argument("test_batch_size", help="testing batch size", type=int)
+parser.add_argument("-ops", dest="operations", help="operations to perform", type=SpecialString)
+
 args = parser.parse_args()
 
 ## In[1]: Load data
@@ -36,12 +45,14 @@ train_labels_file = args.train_labels_file
 test_images_file = args.test_images_file
 test_labels_file = args.test_labels_file
 
+included_operators = args.operations
+
 print "- Loading training data"
-digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, train_labels_file, included_operators=["+", "-"])
+digits, digit_labels, symbols, symbol_labels = load_data(train_images_file, train_labels_file, included_operators)
 print "  Finished"
 
 print "- Loading testing data"
-test_digits, test_digit_labels, test_symbols, test_symbol_labels = load_data(test_images_file, test_labels_file, included_operators=["+", "-"])
+test_digits, test_digit_labels, test_symbols, test_symbol_labels = load_data(test_images_file, test_labels_file, included_operators)
 print "  Finished"
 
 sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels, 20, 1, 1)
