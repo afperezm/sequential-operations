@@ -182,13 +182,13 @@ biases = {
 pred = buildRecurrentNeuralNetwork(x, istate, weights, biases)
 
 # Define loss using squared mean
-cost = tf.reduce_mean(tf.nn.l2_loss(pred - y))
+cost = tf.reduce_mean(tf.nn.l2_loss(pred - tf.log(y)))
 
 # Define optimizer as Adam Optimizer
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 # Evaluate model
-correct_pred = tf.equal(tf.round(pred), tf.round(y))
+correct_pred = tf.equal(tf.round(tf.exp(pred)), tf.round(y))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 print "  Finished"
