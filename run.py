@@ -4,6 +4,7 @@ import numpy as np
 import random
 import re
 import tensorflow as tf
+from time import time
 from tensorflow.models.rnn import rnn, rnn_cell
 from seqops.data import generate_sequence
 from seqops.data import load_data
@@ -201,8 +202,6 @@ model_filename = args.model_filename
 test_seed = args.test_seed
 test_batch_size = args.test_batch_size
 
-print "- Training agent"
-
 # Initialize variables
 init = tf.initialize_all_variables()
 
@@ -211,6 +210,8 @@ with tf.Session() as session:
     session.run(init)
     step = 1
     # Keep training until reach max iterations
+    print "- Training agent"
+    start = time()
     while step < training_iters:
         # Generate random sequence from trainig data
         batch_xs, batch_ys, batch_ops = generate_sequence(digits, digit_labels, symbols, symbol_labels, batch_size, n_first_digit_length, n_second_digit_length)
@@ -222,14 +223,19 @@ with tf.Session() as session:
             print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(acc)
         # Increase step
         step += 1
+    end = time()
+    seconds = end - start
+    m, s = divmod(seconds, 60)
+    h, m = divmod(m, 60)
+    print "  Finished in " + "%02dh:%02dm:%02ds" % (h, m, s)
     # Generate random sequence from testing data
     random.seed(test_seed)
     batch_xs, batch_ys, batch_ops = generate_sequence(test_digits, test_digit_labels, test_symbols, test_symbol_labels, test_batch_size, n_first_digit_length, n_second_digit_length)
     # Calculate batch accuracy
+    print "- Testing agent"
     loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((test_batch_size, 2 * n_hidden))})
     print "  Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Testing_Accuracy=" + "{:.5f}".format(accuracy)
+    print "  Finished"
     np.set_printoptions(threshold='nan')
     print np.hstack((batch_ops, batch_ys, prediction))
-
-print "  Finished"
 
