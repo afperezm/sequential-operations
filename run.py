@@ -257,10 +257,10 @@ with tf.Session() as session:
     print "  Finished in " + "%02dh:%02dm:%02ds" % (h, m, s)
     # Generate random sequence from testing data
     random.seed(test_seed)
-    batch_xs, batch_ys, batch_ops = generate_sequence(test_digits, test_digit_labels, test_symbols, test_symbol_labels, test_batch_size, n_first_digit_length, n_second_digit_length)
+    test_xs, test_ys, test_ops = generate_sequence(test_digits, test_digit_labels, test_symbols, test_symbol_labels, test_batch_size, n_first_digit_length, n_second_digit_length)
     # Calculate batch accuracy
     print "- Testing agent"
-    loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((test_batch_size, 2 * n_hidden))})
+    loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: test_xs, y: test_ys, istate: np.zeros((test_batch_size, 2 * n_hidden))})
     print "  Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Testing_Accuracy=" + "{:.5f}".format(accuracy)
     print "  Finished"
     #np.set_printoptions(threshold='nan')
