@@ -263,6 +263,6 @@ with tf.Session() as session:
     loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((test_batch_size, 2 * n_hidden))})
     print "  Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Testing_Accuracy=" + "{:.5f}".format(accuracy)
     print "  Finished"
-    np.set_printoptions(threshold='nan')
-    print np.hstack((batch_ops, batch_ys, prediction))
+    #np.set_printoptions(threshold='nan')
+    #print np.hstack((test_ops, test_ys, prediction))
 
