@@ -228,6 +228,9 @@ init = tf.initialize_all_variables()
 
 # Launch the graph
 with tf.Session() as session:
+    #random.seed(test_seed)
+    #val_xs, val_ys, val_ops = generate_sequence(test_digits, test_digit_labels, test_symbols, test_symbol_labels, batch_size, n_first_digit_labels, test_symbols, test_symbol_labels, batch_size, n_first_digit_length, n_second_digit_length)
+    # Start variables
     session.run(init)
     step = 1
     # Keep training until reach max iterations
@@ -242,6 +245,9 @@ with tf.Session() as session:
             # Calculate batch accuracy, loss and prediction
             loss, acc, prd = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
             print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(acc)
+            # Calculate test accuracy
+            #vloss, vacc, vpred = session.run([cost, accuracy, pred], feed_dict={x: val_xs, y: val_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
+            #print "    * Val_Error=" + "{:.6f}".format(np.sqrt(vloss)) + " Val_Accuracy=" + "{:.5f}".format(vacc)
         # Increase step
         step += 1
     end = time()
