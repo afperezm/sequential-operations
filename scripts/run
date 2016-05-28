@@ -18,9 +18,16 @@ test_images_file="./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
 test_labels_file="./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
 test_seed=2016
 test_batch_size=1000
+use_log=0
+cnn_weights_stddev=0.1
+cnn_bias_value=0.1
+rnn_weights_hidden_stddev=0.1
+rnn_weights_out1_stddev=0.1
+rnn_weights_out2_stddev=0.1
+rnn_biases_hidden_stddev=0.1
 operations="+-*/"
 
-args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $model_filename $test_images_file $test_labels_file $test_seed $test_batch_size -ops=$operations"
+args="$train_images_file $train_labels_file $convnet_file $learning_rate $batch_size $n_input $n_hidden $n_first_digit_length $n_second_digit_length $training_iters $display_step $model_filename $test_images_file $test_labels_file $test_seed $test_batch_size $use_log $cnn_weights_stddev $cnn_bias_value $rnn_weights_hidden_stddev $rnn_weights_out1_stddev $rnn_weights_out2_stddev $rnn_biases_hidden_stddev -ops=$operations"
 
 echo $args
 

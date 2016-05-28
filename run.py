@@ -34,6 +34,13 @@ parser.add_argument("test_images_file", help="testing images file in NumPy stand
 parser.add_argument("test_labels_file", help="testing labels file in NumPy standard binary file format")
 parser.add_argument("test_seed", help="testing seed", type=int)
 parser.add_argument("test_batch_size", help="testing batch size", type=int)
+parser.add_argument("use_log", help="flag indicating whether output should be log transformed", type=int, choices=[0, 1])
+parser.add_argument("cnn_weights_stddev", help="standard deviation of the CNN weights", type=float)
+parser.add_argument("cnn_bias_value", help="value of the CNN bias", type=float)
+parser.add_argument("rnn_weights_hidden_stddev", help="standard deviation of the RNN weights from the hidden layer", type=float)
+parser.add_argument("rnn_weights_out1_stddev", help="standard deviation of the RNN weights from the out1 layer", type=float)
+parser.add_argument("rnn_weights_out2_stddev", help="standard deviation of the RNN weights from the out2 layer", type=float)
+parser.add_argument("rnn_biases_hidden_stddev", help="standard deviation of the RNN biases from the hidden layer", type=float)
 parser.add_argument("-ops", dest="operations", help="operations to perform", type=SpecialString)
 
 args = parser.parse_args()
@@ -70,6 +77,13 @@ n_hidden = args.n_hidden
 n_first_digit_length = args.n_first_digit_length
 n_second_digit_length = args.n_second_digit_length
 n_steps = n_first_digit_length + 1 + n_second_digit_length
+use_log = args.use_log
+cnn_weights_stddev = args.cnn_weights_stddev
+cnn_bias_value = args.cnn_bias_value
+rnn_weights_hidden_stddev = args.rnn_weights_hidden_stddev
+rnn_weights_out1_stddev = args.rnn_weights_out1_stddev
+rnn_weights_out2_stddev = args.rnn_weights_out2_stddev
+rnn_biases_hidden_stddev = args.rnn_biases_hidden_stddev
 
 assert(n_steps >= 3)
 assert(n_steps <= 11)
@@ -82,7 +96,7 @@ def buildWeightVariable(shape, init=None):
     """
     if init is None:
         # Builds a variable from a random sequence of given shape with mean 0.0 standard deviation 0.1
-        initial = tf.truncated_normal(shape, stddev=0.1)
+        initial = tf.truncated_normal(shape, stddev=cnn_weights_stddev)
         return tf.Variable(initial)
     else:
         # Builds a variable from a given tensor
@@ -94,7 +108,7 @@ def buildBiasVariable(shape, init=None):
     """
     if init is None:
         # Builds a variable from constant sequence of given shape with value 0.1
-        initial = tf.constant(0.1, shape=shape)
+        initial = tf.constant(cnn_bias_value, shape=shape)
         return tf.Variable(initial)
     else:
       # Builds a variable from a given tensor
@@ -169,13 +183,13 @@ istate = tf.placeholder("float", [None, 2 * n_hidden])
 
 # Define hidden layer weights
 weights = {
-    'hidden': tf.Variable(tf.random_normal([n_input, n_hidden], stddev=0.1)),
-    'out1': tf.Variable(tf.truncated_normal([n_hidden, n_hidden], stddev=0.1)),
-    'out2': tf.Variable(tf.truncated_normal([n_hidden, 1], stddev=0.1))
+    'hidden': tf.Variable(tf.random_normal([n_input, n_hidden], stddev=rnn_weights_hidden_stddev)),
+    'out1': tf.Variable(tf.truncated_normal([n_hidden, n_hidden], stddev=rnn_weights_out1_stddev)),
+    'out2': tf.Variable(tf.truncated_normal([n_hidden, 1], stddev=rnn_weights_out2_stddev))
 }
 
 biases = {
-    'hidden': tf.Variable(tf.random_normal([n_hidden], stddev=0.1)),
+    'hidden': tf.Variable(tf.random_normal([n_hidden], stddev=rnn_biases_hidden_stddev)),
     'out1': tf.Variable(tf.zeros([n_hidden])),
     'out2': tf.Variable(tf.zeros([1]))
 }
@@ -183,13 +197,20 @@ biases = {
 pred = buildRecurrentNeuralNetwork(x, istate, weights, biases)
 
 # Define loss using squared mean
-cost = tf.reduce_mean(tf.nn.l2_loss(pred - tf.log(y)))
+if use_log == 0:
+    cost = tf.reduce_mean(tf.nn.l2_loss(pred - y))
+else:
+    cost = tf.reduce_mean(tf.nn.l2_loss(pred - tf.log(y+1e-7)))
 
 # Define optimizer as Adam Optimizer
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 # Evaluate model
-correct_pred = tf.equal(tf.round(tf.exp(pred)), tf.round(y))
+if use_log == 0:
+    correct_pred = tf.equal(tf.round(pred), tf.round(y))
+else:
+    correct_pred = tf.equal(tf.round(tf.exp(pred)), tf.round(y))
+
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
 print "  Finished"
