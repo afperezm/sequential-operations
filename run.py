@@ -34,7 +34,7 @@ parser.add_argument("test_images_file", help="testing images file in NumPy stand
 parser.add_argument("test_labels_file", help="testing labels file in NumPy standard binary file format")
 parser.add_argument("test_seed", help="testing seed", type=int)
 parser.add_argument("test_batch_size", help="testing batch size", type=int)
-parser.add_argument("use_log", help="flag indicating whether output should be log transformed", type=int, choices=[0, 1])
+parser.add_argument("use_log", help="flag indicating whether output should be log transformed", type=int, choices=[0, 1, 2])
 parser.add_argument("cnn_weights_stddev", help="standard deviation of the CNN weights", type=float)
 parser.add_argument("cnn_bias_value", help="value of the CNN bias", type=float)
 parser.add_argument("rnn_weights_hidden_stddev", help="standard deviation of the RNN weights from the hidden layer", type=float)
@@ -199,8 +199,12 @@ pred = buildRecurrentNeuralNetwork(x, istate, weights, biases)
 # Define loss using squared mean
 if use_log == 0:
     cost = tf.reduce_mean(tf.nn.l2_loss(pred - y))
-else:
+elif use_log == 1:
     cost = tf.reduce_mean(tf.nn.l2_loss(pred - tf.log(y+1e-7)))
+elif use_log == 2:
+    rawE = pred - y
+    smoothL1 = tf.select(tf.less(tf.abs(rawE), 1), 0.5*tf.square(rawE), tf.abs(rawE)-0.5)
+    cost = tf.reduce_mean(smoothL1)
 
 # Define optimizer as Adam Optimizer
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
@@ -208,8 +212,10 @@ optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 # Evaluate model
 if use_log == 0:
     correct_pred = tf.equal(tf.round(pred), tf.round(y))
-else:
+elif use_log == 1:
     correct_pred = tf.equal(tf.round(tf.exp(pred)), tf.round(y))
+elif use_log == 2:
+    correct_pred = tf.equal(tf.round(pred), tf.round(y))
 
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
@@ -244,7 +250,7 @@ with tf.Session() as session:
         if step % display_step == 0:
             # Calculate batch accuracy, loss and prediction
             loss, acc, prd = session.run([cost, accuracy, pred], feed_dict={x: batch_xs, y: batch_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
-            print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Training_Accuracy=" + "{:.5f}".format(acc)
+            print "  Iteration=" + str(step) + " Minibatch_Error=" + "{:.6f}".format(loss) + " Training_Accuracy=" + "{:.5f}".format(acc)
             # Calculate test accuracy
             #vloss, vacc, vpred = session.run([cost, accuracy, pred], feed_dict={x: val_xs, y: val_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
             #print "    * Val_Error=" + "{:.6f}".format(np.sqrt(vloss)) + " Val_Accuracy=" + "{:.5f}".format(vacc)
@@ -258,10 +264,10 @@ with tf.Session() as session:
     # Generate random sequence from testing data
     random.seed(test_seed)
     test_xs, test_ys, test_ops = generate_sequence(test_digits, test_digit_labels, test_symbols, test_symbol_labels, test_batch_size, n_first_digit_length, n_second_digit_length)
-    # Calculate batch accuracy
+    # Calculate test accuracy
     print "- Testing agent"
     loss, accuracy, prediction = session.run([cost, accuracy, pred], feed_dict={x: test_xs, y: test_ys, istate: np.zeros((test_batch_size, 2 * n_hidden))})
-    print "  Minibatch_Error=" + "{:.6f}".format(np.sqrt(loss)) + " Testing_Accuracy=" + "{:.5f}".format(accuracy)
+    print "  Minibatch_Error=" + "{:.6f}".format(loss) + " Testing_Accuracy=" + "{:.5f}".format(accuracy)
     print "  Finished"
     #np.set_printoptions(threshold='nan')
     #print np.hstack((test_ops, test_ys, prediction))
