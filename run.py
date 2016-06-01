@@ -65,10 +65,6 @@ print "- Loading testing data"
 test_digits, test_digit_labels, test_symbols, test_symbol_labels = load_data(test_images_file, test_labels_file, included_operators)
 print "  Finished"
 
-sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels, 20, 1, 1)
-
-print "- Size of sequence tensor:", sequence.shape
-
 ## In[2]: Create agent
 
 convnet_file = args.convnet_file
@@ -89,6 +85,10 @@ rnn_biases_hidden_stddev = args.rnn_biases_hidden_stddev
 
 assert(n_steps >= 3)
 assert(n_steps <= 11)
+
+sequence, result, operands = generate_sequence(digits, digit_labels, symbols, symbol_labels, 1, n_first_digit_length, n_second_digit_length)
+
+print "- Size of sequence tensor:", sequence.shape
 
 print "- Creating agent"
 
