@@ -242,7 +242,7 @@ with tf.Session() as session:
     # Keep training until reach max iterations
     print "- Training agent"
     start = time()
-    while step < training_iters:
+    while step <= training_iters:
         # Generate random sequence from trainig data
         batch_xs, batch_ys, batch_ops = generate_sequence(digits, digit_labels, symbols, symbol_labels, batch_size, n_first_digit_length, n_second_digit_length)
         # Fit training using batch data
