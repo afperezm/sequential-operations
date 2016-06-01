@@ -1,6 +1,7 @@
 import argparse
 import cPickle as pickle  
 import numpy as np
+import os.path
 import random
 import re
 import tensorflow as tf
@@ -41,6 +42,7 @@ parser.add_argument("rnn_weights_hidden_stddev", help="standard deviation of the
 parser.add_argument("rnn_weights_out1_stddev", help="standard deviation of the RNN weights from the out1 layer", type=float)
 parser.add_argument("rnn_weights_out2_stddev", help="standard deviation of the RNN weights from the out2 layer", type=float)
 parser.add_argument("rnn_biases_hidden_stddev", help="standard deviation of the RNN biases from the hidden layer", type=float)
+parser.add_argument("save_freq", help="frequency for saving model", type=int)
 parser.add_argument("-ops", dest="operations", help="operations to perform", type=SpecialString)
 
 args = parser.parse_args()
@@ -228,9 +230,13 @@ display_step = args.display_step
 model_filename = args.model_filename
 test_seed = args.test_seed
 test_batch_size = args.test_batch_size
+save_freq = args.save_freq
 
 # Initialize variables
 init = tf.initialize_all_variables()
+
+# Initialize model saver
+saver = tf.train.Saver()
 
 # Launch the graph
 with tf.Session() as session:
@@ -239,6 +245,10 @@ with tf.Session() as session:
     # Start variables
     session.run(init)
     step = 1
+    if os.path.isfile(model_filename):
+        print("- Restoring model from [" + model_filename + "]")
+        saver.restore(session, model_filename)
+        print("  Done")
     # Keep training until reach max iterations
     print "- Training agent"
     start = time()
@@ -254,6 +264,10 @@ with tf.Session() as session:
             # Calculate test accuracy
             #vloss, vacc, vpred = session.run([cost, accuracy, pred], feed_dict={x: val_xs, y: val_ys, istate: np.zeros((batch_size, 2 * n_hidden))})
             #print "    * Val_Error=" + "{:.6f}".format(np.sqrt(vloss)) + " Val_Accuracy=" + "{:.5f}".format(vacc)
+        if step % save_freq == 0:
+            print("- Saving model to [" + model_filename + "]")
+            saver.save(session, model_filename)
+            print("  Done")
         # Increase step
         step += 1
     end = time()
