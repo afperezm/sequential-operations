@@ -35,7 +35,7 @@ parser.add_argument("test_images_file", help="testing images file in NumPy stand
 parser.add_argument("test_labels_file", help="testing labels file in NumPy standard binary file format")
 parser.add_argument("test_seed", help="testing seed", type=int)
 parser.add_argument("test_batch_size", help="testing batch size", type=int)
-parser.add_argument("use_log", help="flag indicating whether output should be log transformed", type=int, choices=[0, 1, 2])
+parser.add_argument("cost_func", help="cost function to be used", type=int, choices=[0, 1, 2, 3])
 parser.add_argument("cnn_weights_stddev", help="standard deviation of the CNN weights", type=float)
 parser.add_argument("cnn_bias_value", help="value of the CNN bias", type=float)
 parser.add_argument("rnn_weights_hidden_stddev", help="standard deviation of the RNN weights from the hidden layer", type=float)
@@ -43,6 +43,8 @@ parser.add_argument("rnn_weights_out1_stddev", help="standard deviation of the R
 parser.add_argument("rnn_weights_out2_stddev", help="standard deviation of the RNN weights from the out2 layer", type=float)
 parser.add_argument("rnn_biases_hidden_stddev", help="standard deviation of the RNN biases from the hidden layer", type=float)
 parser.add_argument("save_freq", help="frequency for saving model", type=int)
+parser.add_argument("min_pred", help="minimum value possible to predict", type=int)
+parser.add_argument("max_pred", help="maximum value possible to predict", type=int)
 parser.add_argument("-ops", dest="operations", help="operations to perform", type=SpecialString)
 
 args = parser.parse_args()
@@ -75,7 +77,7 @@ n_hidden = args.n_hidden
 n_first_digit_length = args.n_first_digit_length
 n_second_digit_length = args.n_second_digit_length
 n_steps = n_first_digit_length + 1 + n_second_digit_length
-use_log = args.use_log
+cost_func = args.cost_func
 cnn_weights_stddev = args.cnn_weights_stddev
 cnn_bias_value = args.cnn_bias_value
 rnn_weights_hidden_stddev = args.rnn_weights_hidden_stddev
@@ -196,15 +198,29 @@ biases = {
     'out2': tf.Variable(tf.zeros([1]))
 }
 
+a = -100
+b = 100
+
+min_pred = args.min_pred
+max_pred = args.max_pred
+
 pred = buildRecurrentNeuralNetwork(x, istate, weights, biases)
 
 # Define loss using squared mean
-if use_log == 0:
+if cost_func == 0:
     cost = tf.reduce_mean(tf.nn.l2_loss(pred - y))
-elif use_log == 1:
+elif cost_func == 1:
     cost = tf.reduce_mean(tf.nn.l2_loss(pred - tf.log(y+1e-7)))
-elif use_log == 2:
+elif cost_func == 2:
+    # Compute cost using Smooth-L1 norm
     rawE = pred - y
+    smoothL1 = tf.select(tf.less(tf.abs(rawE), 1), 0.5*tf.square(rawE), tf.abs(rawE)-0.5)
+    cost = tf.reduce_mean(smoothL1)
+elif cost_func == 3:
+    # Apply min-max feature scaling
+    norm_y = a + (y - min_pred) * (b - a) / (max_pred - min_pred)
+    # Compute cost using Smooth-L1 norm
+    rawE = pred - norm_y
     smoothL1 = tf.select(tf.less(tf.abs(rawE), 1), 0.5*tf.square(rawE), tf.abs(rawE)-0.5)
     cost = tf.reduce_mean(smoothL1)
 
@@ -212,12 +228,16 @@ elif use_log == 2:
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 # Evaluate model
-if use_log == 0:
+if cost_func == 0:
     correct_pred = tf.equal(tf.round(pred), tf.round(y))
-elif use_log == 1:
+elif cost_func == 1:
     correct_pred = tf.equal(tf.round(tf.exp(pred)), tf.round(y))
-elif use_log == 2:
+elif cost_func == 2:
     correct_pred = tf.equal(tf.round(pred), tf.round(y))
+elif cost_func == 3:
+    # Apply inverse min-max feature scaling
+    denorm_pred = min_pred + (pred - a) * (max_pred - min_pred) / (b - a)
+    correct_pred = tf.equal(tf.round(denorm_pred), tf.round(y))
 
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
