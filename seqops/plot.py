@@ -31,33 +31,35 @@ def plot_sequence(sequence, seqIdx, filename):
     plt.imshow(255 - operation, cmap='gray')
     plt.savefig(filename)
 
-def plot_performance(data_fname, minibatch_error_plot_fname, training_accuracy_fname):
+def parse_performance(data_fname):
     
-    data = np.loadtxt(fname=data_fname, dtype="string", skiprows=11)
+    data = np.loadtxt(fname=data_fname, dtype="string")
     
     assert(len(data.shape) == 2)
     assert(data.shape[0] > 0)
     assert(data.shape[1] == 3)
     
-    performance = np.zeros((data.shape))
+    performance = np.zeros((data.shape[0], 2))
     
     for rowIdx in range(data.shape[0]):
-        # Iteration
-        performance[rowIdx, 0] = int(data[rowIdx, 0].split("=")[1])
         # Minibatch error
         performance[rowIdx, 1] = float(data[rowIdx, 1].split("=")[1])
         # Training accuracy
         performance[rowIdx, 2] = float(data[rowIdx, 2].split("=")[1])
     
+    return performance
+
+def plot_performance(minibatch_error_plot_fname, training_accuracy_fname):
+
     plt.plot(performance[:, 0], performance[:, 1])
     plt.xlabel("Iteration")
     plt.ylabel("Minibatch error")
     plt.savefig(minibatch_error_plot_fname)
     plt.clf()
-    
+
     plt.plot(performance[:, 0], performance[:, 2])
     plt.xlabel("Iteration")
     plt.ylabel("Training accuracy")
+
     plt.savefig(training_accuracy_fname)
     plt.clf()
-
