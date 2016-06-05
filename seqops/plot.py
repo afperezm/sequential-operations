@@ -28,6 +28,7 @@ def plot_sequence(sequence, seqIdx, filename):
         else:
             operation = np.hstack((operation, elem))
     
+    plt.axis('off')
     plt.imshow(255 - operation, cmap='gray')
     plt.savefig(filename)
 
