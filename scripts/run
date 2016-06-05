@@ -2,8 +2,8 @@
 
 export CUDA_VISIBLE_DEVICES=-1
 
-train_images_file="./SYMBOLS_DATA/DATA_TRAIN_IMAGES.npy"
-train_labels_file="./SYMBOLS_DATA/DATA_TRAIN_LABELS.npy"
+train_images_file="./SYMBOLS_DATA/NEW_TRAIN_IMAGES.npy"
+train_labels_file="./SYMBOLS_DATA/NEW_TRAIN_LABELS.npy"
 convnet_file="./CONVNET_DATA/convnet.pkl"
 learning_rate=0.001
 batch_size=64
@@ -14,8 +14,8 @@ n_second_digit_length=1
 training_iters=30000
 display_step=10
 model_filename="./model.ckpt"
-test_images_file="./SYMBOLS_DATA/DATA_TEST_IMAGES.npy"
-test_labels_file="./SYMBOLS_DATA/DATA_TEST_LABELS.npy"
+test_images_file="./SYMBOLS_DATA/NEW_TEST_IMAGES.npy"
+test_labels_file="./SYMBOLS_DATA/NEW_TEST_LABELS.npy"
 test_seed=2016
 test_batch_size=1000
 use_log=0
