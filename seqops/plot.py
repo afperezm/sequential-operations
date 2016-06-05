@@ -44,9 +44,9 @@ def parse_performance(data_fname):
     
     for rowIdx in range(data.shape[0]):
         # Minibatch error
-        performance[rowIdx, 1] = float(data[rowIdx, 1].split("=")[1])
+        performance[rowIdx, 0] = float(data[rowIdx, 1].split("=")[1])
         # Training accuracy
-        performance[rowIdx, 2] = float(data[rowIdx, 2].split("=")[1])
+        performance[rowIdx, 1] = float(data[rowIdx, 2].split("=")[1])
     
     return performance
 
