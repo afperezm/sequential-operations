@@ -28,7 +28,7 @@ def load_data(train_images_file, train_labels_file, included_operators = ["+", "
     idx = np.sum(symbol_labels[:,symbol_indices], axis=1)
     
     # Obtain labels of symbols labeled as addition or subtraction
-    filtered_symbol_labels = symbol_labels[idx>0, :][:, symbol_indices]
+    filtered_symbol_labels = symbol_labels[idx>0, :]
     
     # Obtain symbols labeled as addition or subtraction
     filtered_symbols = symbols[idx>0, :, :]
